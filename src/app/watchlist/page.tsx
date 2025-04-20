@@ -1,4 +1,5 @@
 "use client";
+
 import type React from "react";
 import { useState, useEffect } from "react";
 
@@ -10,6 +11,7 @@ function loadWatchlist(): string[] {
     return [];
   }
 }
+
 function saveWatchlist(list: string[]) {
   localStorage.setItem("watchlist", JSON.stringify(list));
 }
@@ -17,8 +19,14 @@ function saveWatchlist(list: string[]) {
 export default function WatchlistPage() {
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [input, setInput] = useState("");
-  useEffect(() => { setWatchlist(loadWatchlist()); }, []);
-  useEffect(() => { saveWatchlist(watchlist); }, [watchlist]);
+
+  useEffect(() => {
+    setWatchlist(loadWatchlist());
+  }, []);
+
+  useEffect(() => {
+    saveWatchlist(watchlist);
+  }, [watchlist]);
 
   const addStock = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +36,10 @@ export default function WatchlistPage() {
       setInput("");
     }
   };
-  const removeStock = (t:string) => setWatchlist(watchlist.filter(s => s !== t));
+
+  const removeStock = (ticker: string) => {
+    setWatchlist(watchlist.filter((s) => s !== ticker));
+  };
 
   return (
     <div className="max-w-md mx-auto py-10 space-y-8">
@@ -39,17 +50,32 @@ export default function WatchlistPage() {
           placeholder="Stock Ticker"
           className="rounded p-2 text-black w-32"
           value={input}
-          onChange={e=>setInput(e.target.value)}
+          onChange={(e) => setInput(e.target.value)}
           required
+          aria-label="Stock Ticker"
         />
-        <button type="submit" className="bg-blue-600 text-white font-semibold px-4 py-2 rounded">Add</button>
+        <button
+          type="submit"
+          className="bg-blue-600 text-white font-semibold px-4 py-2 rounded"
+          aria-label="Add Stock"
+        >
+          Add
+        </button>
       </form>
       <ul className="rounded bg-zinc-900 p-4 divide-y divide-zinc-800">
-        {watchlist.length===0 && <li className="text-zinc-400">No stocks in your watchlist.</li>}
-        {watchlist.map(ticker => (
+        {watchlist.length === 0 && (
+          <li className="text-zinc-400">No stocks in your watchlist.</li>
+        )}
+        {watchlist.map((ticker) => (
           <li key={ticker} className="flex justify-between items-center py-2">
             <span className="font-mono text-lg">{ticker}</span>
-            <button className="text-red-400 text-xs hover:underline" onClick={()=>removeStock(ticker)}>Delete</button>
+            <button
+              className="text-red-400 text-xs hover:underline"
+              onClick={() => removeStock(ticker)}
+              aria-label={`Delete ${ticker}`}
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
